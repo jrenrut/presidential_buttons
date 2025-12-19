@@ -227,6 +227,12 @@ section[data-year]{
     font-size:14px;
     padding:6px 13px;
   }
+  /* Show full text on small screens */
+  .card{ height:auto; }
+  .info, .backtext{ overflow:visible; }
+  /* Optional: stack cards in one column for readability */
+  .grid{ grid-template-columns:1fr; gap:16px; }
+  .content{ padding:16px; }
 }
 
 /* party stripe on cards */
@@ -1180,7 +1186,7 @@ const buttons = [
     candidate: "William Howard Taft",
     vp: "Nicholas M. Butler",
     party: "Republican",
-    result: "Won",
+    result: "Lost",
     slogan: "It is Nothing but Fair to Leave Taft in the Chair",
     front: "images/1912_taft_02_front.jpg",
     back: "images/1912_taft_02_back.jpg",
