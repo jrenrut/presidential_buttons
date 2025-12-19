@@ -1,3 +1,1913 @@
-<!doctype html><meta charset="utf-8">
-<title>Buttons</title>
-<a href="gallery.html">Open Gallery</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Political Campaign Buttons (1840–1924)</title>
+
+<style>
+:root{
+  --bg:#0b1020;
+  --card:#11162a;
+  --text:#e6e9f2;
+  --muted:#9aa3c7;
+
+  --dem:#2b6cff;
+  --rep:#c0392b;
+  --prog:#2ecc71;
+  --whig:#d4ac0d;
+  --other:#888;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:90px 1fr;
+}
+
+/* =========================
+   TIMELINE
+========================= */
+.timeline{
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+  border-right:1px solid rgba(255,255,255,.15);
+  padding:10px 0;
+}
+
+.tick{
+  padding-left:22px;
+  height:80px;
+  display:flex;
+  align-items:center;
+  font-size:12px;
+  color:var(--muted);
+  position:relative;
+}
+
+.tick::before{
+  content:"";
+  position:absolute;
+  left:8px;
+  top:10%;
+  bottom:10%;
+  width:6px;
+  border-radius:3px;
+}
+
+.tick.dem::before{background:var(--dem)}
+.tick.rep::before{background:var(--rep)}
+.tick.prog::before{background:var(--prog)}
+.tick.whig::before{background:var(--whig)}
+.tick.other::before{background:var(--other)}
+
+.tick.decade{
+  font-weight:700;
+  opacity:.6;
+}
+
+/* active year highlight in timeline */
+.year-tick.active{
+  outline:2px solid #fff;
+  color:var(--text);
+  background:rgba(255,255,255,.08);
+  border-radius:8px;
+}
+
+/* minimalist scrollbar for timeline */
+.timeline{
+  scrollbar-width: thin;                  /* Firefox */
+  scrollbar-color: rgba(255,255,255,.25) transparent;
+}
+.timeline::-webkit-scrollbar{              /* WebKit */
+  width:8px;
+}
+.timeline::-webkit-scrollbar-track{
+  background:transparent;
+}
+.timeline::-webkit-scrollbar-thumb{
+  background-color:rgba(255,255,255,.18);
+  border-radius:8px;
+  border:2px solid transparent;
+  background-clip:padding-box;
+}
+
+/* =========================
+   CONTENT
+========================= */
+.content{
+  padding:32px;
+  max-width:1200px;
+}
+
+section[data-year]{
+  margin-bottom:88px; /* spacing between elections */
+}
+
+.season h2{
+  margin:0 0 24px 0;
+  font-size:1.7rem;
+}
+
+/* =========================
+   GRID / CARDS
+========================= */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:22px;
+}
+
+.card{
+  position:relative;
+  border-radius:16px;
+  background:var(--card);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.15);
+  height:420px;
+  display:flex;
+  flex-direction:column;
+}
+
+.card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:contain;
+  background:#000;
+}
+
+.card .front{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+.card .back{
+  flex:1;
+  flex-direction:column;
+  display:none;
+}
+
+.info,
+.backtext{
+  flex:1;
+  overflow-y:auto;
+  padding:10px 12px 8px;
+  font-size:12px;
+}
+
+.slogan{
+  font-weight:700;
+  display:block;
+  margin-bottom:6px;
+}
+
+.back{display:none}
+.card.show-back .front{display:none}
+.card.show-back .back{display:flex}
+
+/* folded corner cue */
+.card::after{
+  content:"";
+  position:absolute;
+  top:0;
+  right:0;
+  border-width:0 26px 26px 0;
+  border-style:solid;
+  border-color:transparent rgba(255,255,255,.25) transparent transparent;
+  transition:transform .25s ease;
+}
+
+.card:hover::after{
+  transform:translate(-6px,6px);
+}
+
+/* corner flip label: shows current side */
+.card::before{
+  content:"Obverse"; /* front shown by default */
+  position:absolute;
+  top:6px;
+  right:6px;
+  font-size:13px; /* larger for readability */
+  font-weight:600;
+  line-height:1;
+  padding:5px 12px; /* larger pill */
+  color:#111; /* strong contrast */
+  background:rgba(255,255,255,.92); /* high-contrast pill */
+  border:1px solid rgba(0,0,0,.15);
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  backdrop-filter:saturate(120%) blur(2px);
+  transition:opacity .25s ease, transform .25s ease;
+  opacity:.95;
+  z-index:3;
+  pointer-events:none; /* don't block card clicks */
+}
+.card:hover::before{
+  opacity:1;
+  transform:translateY(0);
+}
+.card.show-back::before{
+  content:"Reverse"; /* when back is visible */
+}
+
+/* mobile-friendly sizing */
+@media (max-width: 520px){
+  .card::before{
+    font-size:14px;
+    padding:6px 13px;
+  }
+}
+
+/* party stripe on cards */
+.party-dem{border-left:6px solid var(--dem)}
+.party-rep{border-left:6px solid var(--rep)}
+.party-prog{border-left:6px solid var(--prog)}
+.party-whig{border-left:6px solid var(--whig)}
+.party-other{border-left:6px solid var(--other)}
+
+h3{
+  margin:28px 0 12px;
+  font-weight:600;
+  color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<!-- ======================================================
+     DATA
+====================================================== -->
+
+<script>
+
+
+const buttons = [
+  {
+    id: "001",
+    title: "Grover Cleveland",
+    year: 1892,
+    era: "1890s",
+    candidate: "Grover Cleveland",
+    vp: "Adlai E. Stevenson",
+    party: "Democratic",
+    result: "Won",
+    slogan: "Our choice: Cleve and Steve",
+    front: "images/1892_cleveland_01_front.jpg",
+    back: "images/1892_cleveland_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Baldwin & Gleason N.Y. in N.Y.",
+    notes: "",
+    link: "https://www.loriferber.com/grover-cleveland-stud-button.html?srsltid=AfmBOorQcksoGac4g-wDVQlEtvkA6YvlEfXT4VMFC2-6PBm1iwlzorVT"
+  },
+  {
+    id: "002",
+    title: "William Henry Harrison",
+    year: 1840,
+    era: "1840s",
+    candidate: "William Henry Harrison",
+    vp: "John Tyler",
+    party: "Whig",
+    result: "Won",
+    slogan: "Tippecanoe and Tyler Too",
+    front: "images/1840_harrison_01_front.jpg",
+    back: "images/1840_harrison_01_back.jpg",
+    text_front: "MAJ: GENl W.H. HARRISON/BORN FEB.9.1773",
+    text_back: "THE PEOPLE’S CHOICE IN THE YEAR 1840",
+    manufacturer: "Scovill Manufacturing Company of Waterbury, Connecticut",
+    notes: "",
+    link: "https://americanhistory.si.edu/collections/object/nmah_1382659"
+  },
+  {
+    id: "003",
+    title: "Henry Clay",
+    year: 1844,
+    era: "1840s",
+    candidate: "Henry Clay",
+    vp: "Theodore Frelinghuysen",
+    party: "Whig",
+    result: "Lost",
+    slogan: "Hurray, Hurray, the Country's Risin' - Vote for Clay and Frelinghuysen!",
+    front: "images/1844_clay_01_front.jpg",
+    back: "images/1844_clay_01_back.jpg",
+    text_front: "HENRY CLAY",
+    text_back: "CLAY - FRELINGHUYSEN - PROTECTION - UNION",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.cointalk.com/threads/an-1844-james-k-polk-campaign-shell-token.367656/"
+  },
+  {
+    id: "004",
+    title: "Winfield Scott",
+    year: 1852,
+    era: "1850s",
+    candidate: "Winfield Scott",
+    vp: "William A. Graham",
+    party: "Whig",
+    result: "Lost",
+    slogan: "The Hero of Many Battles",
+    front: "images/1852_scott_01_front.jpg",
+    back: "images/1852_scott_01_back.jpg",
+    text_front: "MAJ. GENERAL WINFIELD SCOTT.",
+    text_back: "CHIPPEWA - LUNDYS LANE - CERRO GORDO - CONTRERAS - CHURUBUSCO - CHAPULTEPEC - MEXICO",
+    manufacturer: "Scovill Manufacturing Company of Waterbury, Connecticut",
+    notes: "",
+    link: "https://en.numista.com/165899"
+  },
+  {
+    id: "005",
+    title: "Abraham Lincoln",
+    year: 1864,
+    era: "1860s",
+    candidate: "Abraham Lincoln",
+    vp: "Andrew Johnson",
+    party: "Republican",
+    result: "Won",
+    slogan: "Don't Swap Horses in the Middle of the Stream",
+    front: "images/1864_lincoln_01_front.jpg",
+    back: "images/1864_lincoln_01_back.jpg",
+    text_front: "FOR PRESIDENT - 1864 - A. LINCOLN",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.tremontauctions.com/auction-lot/rare-abraham-lincoln-1864-campaign-button.-ferrot_80346efa92"
+  },
+  {
+    id: "006",
+    title: "Stephen A. Douglas",
+    year: 1860,
+    era: "1860s",
+    candidate: "Stephen A. Douglas",
+    vp: "Herschel V. Johnson",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Popular Sovereignty - Non-Intervention",
+    front: "images/1860_douglas_01_front.jpg",
+    back: "images/1860_douglas_01_back.jpg",
+    text_front: "STEPHEN A. DOUGLAS - 1860",
+    text_back: "HERSCHEL V. JOHNSON - 1860",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.lincolncollection.org/collection/categories/item/?cat=16&page=29&item=21982"
+  },
+  {
+    id: "007",
+    title: "John C. Breckinridge",
+    year: 1860,
+    era: "1860s",
+    candidate: "John C. Breckinridge",
+    vp: "Joseph Lane",
+    party: "Southern Democratic",
+    result: "Lost",
+    slogan: "Our Principles: The Constitution",
+    front: "images/1860_breckinridge_01_front.jpg",
+    back: "images/1860_breckinridge_01_back.jpg",
+    text_front: "JOHN C. BRECKINRIDGE - 1860",
+    text_back: "JOSEPH LANE - 1860",
+    manufacturer: "Scovill Manufacturing Company of Waterbury, Connecticut",
+    notes: "",
+    link: "https://americanhistory.si.edu/collections/object/nmah_1379921"
+  },
+  {
+    id: "008",
+    title: "Ulysses S. Grant",
+    year: 1868,
+    era: "1860s",
+    candidate: "Ulysses S. Grant",
+    vp: "Schuyler Colfax",
+    party: "Republican",
+    result: "Won",
+    slogan: "Let Us Have Peace",
+    front: "images/1868_grant_01_front.jpg",
+    back: "images/1868_grant_01_back.jpg",
+    text_front: "GRANT",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "009",
+    title: "George B. McClellan",
+    year: 1864,
+    era: "1860s",
+    candidate: "George B. McClellan",
+    vp: "George H. Pendleton",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "An Honorable, Permanent and Happy Peace",
+    front: "images/1864_mcclellan_01_front.jpg",
+    back: "images/1864_mcclellan_01_back.jpg",
+    text_front: "FOR PRESIDENT - 1864 - G. B. McCLELLAN",
+    text_back: "FOR VICE PRESIDENT - 1864 - G. H. PENDLETON",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "010",
+    title: "Horatio Seymour",
+    year: 1868,
+    era: "1860s",
+    candidate: "Horatio Seymour",
+    vp: "Francis P. Blair Jr.",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Peace, Union, and Constitutional Government",
+    front: "images/1868_seymour_01_front.jpg",
+    back: "images/1868_seymour_01_back.jpg",
+    text_front: "SEYMOUR & BLAIR - 1868",
+    text_back: "GENERAL AMNESTY, UNIFORM CURRENCY, EQUAL TAXES & EQUAL RIGHTS",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.ngccoin.com/coin-explorer/united-states/tokens-and-medals/american-political-medals-1789-1892-dewitt/886129/1868-campaign-dewitt-hs-1868-7-cu-28mm-ms/?des=ms-rb"
+  },
+  {
+    id: "011",
+    title: "Horatio Seymour",
+    year: 1868,
+    era: "1860s",
+    candidate: "Horatio Seymour",
+    vp: "Francis P. Blair Jr.",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Peace, Union, and Constitutional Government",
+    front: "images/1868_seymour_02_front.jpg",
+    back: "images/1868_seymour_02_back.jpg",
+    text_front: "FOR PRESIDENT 1868 - H. SEYMOUR",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "012",
+    title: "Horatio Seymour",
+    year: 1868,
+    era: "1860s",
+    candidate: "Horatio Seymour",
+    vp: "Francis P. Blair Jr.",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Peace, Union, and Constitutional Government",
+    front: "images/1868_seymour_03_front.jpg",
+    back: "images/1868_seymour_03_back.jpg",
+    text_front: "SEYMOUR",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "013",
+    title: "Ulysses S. Grant",
+    year: 1872,
+    era: "1870s",
+    candidate: "Ulysses S. Grant",
+    vp: "Henry Wilson",
+    party: "Republican",
+    result: "Won",
+    slogan: "Grant Us Another Term",
+    front: "images/1872_grant_02_front.jpg",
+    back: "images/1872_grant_02_back.jpg",
+    text_front: "GRANT CLUB - PRESIDENT U. S. GRANT",
+    text_back: "REPUBLICAN CANDIDATE FOR PRESIDENT U.S. - 1872 - PATIENT OF TOIL - SERENE AMIDST ALARMS - INFLEXIBLE IN FAITH - INVINCIBLE IN ARMS",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "014",
+    title: "Rutherford B. Hayes",
+    year: 1876,
+    era: "1870s",
+    candidate: "Rutherford B. Hayes",
+    vp: "William A. Wheeler",
+    party: "Republican",
+    result: "Won",
+    slogan: "Hayes the True and Wheeler Too",
+    front: "images/1876_hayes_01_front.jpg",
+    back: "images/1876_hayes_01_back.jpg",
+    text_front: "R. B. HAYES",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "015",
+    title: "Rutherford B. Hayes",
+    year: 1876,
+    era: "1870s",
+    candidate: "Rutherford B. Hayes",
+    vp: "William A. Wheeler",
+    party: "Republican",
+    result: "Won",
+    slogan: "Hayes the True and Wheeler Too",
+    front: "images/1876_hayes_02_front.jpg",
+    back: "images/1876_hayes_02_back.jpg",
+    text_front: "HAYES - WHEELER",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "016",
+    title: "Samuel J. Tilden",
+    year: 1876,
+    era: "1870s",
+    candidate: "Samuel J. Tilden",
+    vp: "Thomas A. Hendricks",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Tilden and Reform",
+    front: "images/1876_tilden_01_front.jpg",
+    back: "images/1876_tilden_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: "1876_tilden_01_front"
+  },
+  {
+    id: "017",
+    title: "Samuel J. Tilden",
+    year: 1876,
+    era: "1870s",
+    candidate: "Samuel J. Tilden",
+    vp: "Thomas A. Hendricks",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Tilden and Reform",
+    front: "images/1876_tilden_02_front.jpg",
+    back: "images/1876_tilden_02_back.jpg",
+    text_front: "TILDEN & HENDRICKS - CENTENNIAL",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "018",
+    title: "Clinton B. Fisk",
+    year: 1888,
+    era: "1880s",
+    candidate: "Clinton B. Fisk",
+    vp: "John A. Brooks",
+    party: "Prohibition",
+    result: "Lost",
+    slogan: "The Saloon Must Go!",
+    front: "images/1888_fisk_01_front.jpg",
+    back: "images/1888_fisk_01_back.jpg",
+    text_front: "",
+    text_back: "BALWIN & GLEASON CO. LTD - 61 B'WAY NY",
+    manufacturer: "Baldwin & Gleason N.Y. in N.Y.",
+    notes: "",
+    link: "https://www.yesteryearessentials.com/products/antique-political-presidential-campaign-1888-badge?variant=38365322441"
+  },
+  {
+    id: "019",
+    title: "Winfield S. Hancock",
+    year: 1880,
+    era: "1880s",
+    candidate: "Winfield S. Hancock",
+    vp: "William H. English",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Hancock and English",
+    front: "images/1880_hancock_01_front.jpg",
+    back: "images/1880_hancock_01_back.jpg",
+    text_front: "WINFIELD S. HANCOCK",
+    text_back: "A SUPERB SOLDIER - A MODEL PRESIDENT - 2 A C",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.worthpoint.com/worthopedia/1880-winfield-scott-hancock-president-1839532969"
+  },
+  {
+    id: "020",
+    title: "Benjamin Harrison",
+    year: 1888,
+    era: "1880s",
+    candidate: "Benjamin Harrison",
+    vp: "Levi P. Morton",
+    party: "Republican",
+    result: "Won",
+    slogan: "Rejuvenated Republicanism",
+    front: "images/1888_harrison_01_front.jpg",
+    back: "images/1888_harrison_01_back.jpg",
+    text_front: "FOR PRES'D - BENJAMIN HARRISON",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "021",
+    title: "Benjamin Harrison",
+    year: 1892,
+    era: "1890s",
+    candidate: "Benjamin Harrison",
+    vp: "Whitelaw Reid",
+    party: "Republican",
+    result: "Lost",
+    slogan: "Harrison and Protection",
+    front: "images/1892_harrison_01_front.jpg",
+    back: "images/1892_harrison_01_back.jpg",
+    text_front: "",
+    text_back: "WAND & NOBLE - NEW YORK",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "022",
+    title: "Grover Cleveland",
+    year: 1892,
+    era: "1890s",
+    candidate: "Grover Cleveland",
+    vp: "Adlai E. Stevenson",
+    party: "Democratic",
+    result: "Won",
+    slogan: "Tariff Reform",
+    front: "images/1892_cleveland_02_front.jpg",
+    back: "images/1892_cleveland_02_back.jpg",
+    text_front: "1892",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "023",
+    title: "John A. Logan",
+    year: 1884,
+    era: "1880s",
+    candidate: "James G. Blaine",
+    vp: "John A. Logan",
+    party: "Republican",
+    result: "Lost",
+    slogan: "Ma, Ma, Where's My Pa?",
+    front: "images/1884_logan_01_front.jpg",
+    back: "images/1884_logan_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "024",
+    title: "Benjamin Harrison",
+    year: 1888,
+    era: "1880s",
+    candidate: "Benjamin Harrison",
+    vp: "Levi P. Morton",
+    party: "Republican",
+    result: "Won",
+    slogan: "Grandfather's Hat Fits Ben!",
+    front: "images/1888_harrison_02_front.jpg",
+    back: "images/1888_harrison_02_back.jpg",
+    text_front: "PROTECTION FOR AMERICAN INDUSTRY - 1888 - HARRISON",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "025",
+    title: "Grover Cleveland",
+    year: 1892,
+    era: "1890s",
+    candidate: "Grover Cleveland",
+    vp: "Adlai E. Stevenson",
+    party: "Democratic",
+    result: "Won",
+    slogan: "No Force Bill",
+    front: "images/1892_cleveland_03_front.jpg",
+    back: "images/1892_cleveland_03_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.worthpoint.com/dictionary/p/fraternal-political-organizations/national-presidential-elections-american/1892-presidential-election"
+  },
+  {
+    id: "026",
+    title: "James G. Blaine",
+    year: 1884,
+    era: "1880s",
+    candidate: "James G. Blaine",
+    vp: "John A. Logan",
+    party: "Republican",
+    result: "Lost",
+    slogan: "Rum, Romanism and Rebellion",
+    front: "images/1884_blaine_01_front.jpg",
+    back: "images/1884_blaine_01_back.jpg",
+    text_front: "P. L. KRIDER PHILA.",
+    text_back: "THE REPUBLICANS HAVE RULED SINCE 1860 AND WITH BLAINE AND LOGAN ARE GOOD FOR ANOTHER TERM - UNION",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.horsesoldier.com/products/currency,-bonds-and-tokens/48851"
+  },
+  {
+    id: "027",
+    title: "William McKinley",
+    year: 1896,
+    era: "1890s",
+    candidate: "William McKinley",
+    vp: "Garret Hobart",
+    party: "Republican",
+    result: "Won",
+    slogan: "Patriotism, Protection, and Prosperity",
+    front: "images/1896_mckinley_01_front.jpg",
+    back: "images/1896_mckinley_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "028",
+    title: "William McKinley",
+    year: 1896,
+    era: "1890s",
+    candidate: "William McKinley",
+    vp: "Garret Hobart",
+    party: "Republican",
+    result: "Won",
+    slogan: "Full Dinner Pail",
+    front: "images/1896_mckinley_02_front.jpg",
+    back: "images/1896_mckinley_02_back.jpg",
+    text_front: "McKinley - HOBART",
+    text_back: "J. W. DURHAM MFG. CO. PHILA.",
+    manufacturer: "J. W. Durham Mfg. Co. Philadelphia, PA",
+    notes: "",
+    link: "https://www.thehenryford.org/collections-and-research/digital-collections/artifact/76761"
+  },
+  {
+    id: "029",
+    title: "William McKinley",
+    year: 1896,
+    era: "1890s",
+    candidate: "William McKinley",
+    vp: "Garret Hobart",
+    party: "Republican",
+    result: "Won",
+    slogan: "Patriotism, Protection, and Prosperity",
+    front: "images/1896_mckinley_03_front.jpg",
+    back: "images/1896_mckinley_03_back.jpg",
+    text_front: "WM MCKINLEY",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: "https://www.lib.uidaho.edu/digital/buttons/items/mg660_box1_1-0010.html"
+  },
+  {
+    id: "030",
+    title: "William McKinley",
+    year: 1896,
+    era: "1890s",
+    candidate: "William McKinley",
+    vp: "Garret Hobart",
+    party: "Republican",
+    result: "Won",
+    slogan: "Sound Money",
+    front: "images/1896_mckinley_04_front.jpg",
+    back: "images/1896_mckinley_04_back.jpg",
+    text_front: "PROTECTION - SOUND MONEY",
+    text_back: "",
+    manufacturer: "Baldwin & Gleason N.Y. in N.Y.",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "031",
+    title: "William McKinley",
+    year: 1896,
+    era: "1890s",
+    candidate: "William McKinley",
+    vp: "Garret Hobart",
+    party: "Republican",
+    result: "Won",
+    slogan: "Sound Money",
+    front: "images/1896_mckinley_05_front.jpg",
+    back: "images/1896_mckinley_05_back.jpg",
+    text_front: "SOUND MONEY",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "032",
+    title: "William McKinley",
+    year: 1896,
+    era: "1890s",
+    candidate: "William McKinley",
+    vp: "Garret Hobart",
+    party: "Republican",
+    result: "Won",
+    slogan: "Sound Money",
+    front: "images/1896_mckinley_06_front.jpg",
+    back: "images/1896_mckinley_06_back.jpg",
+    text_front: "McKINLEY",
+    text_back: "SWEET CAPORAL CIGARETTE",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "033",
+    title: "William Jennings Bryan",
+    year: 1896,
+    era: "1890s",
+    candidate: "William Jennings Bryan",
+    vp: "Arthur Sewall",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "No Cross of Gold, No Crown of Thorns",
+    front: "images/1896_bryan_01_front.jpg",
+    back: "images/1896_bryan_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "034",
+    title: "William Jennings Bryan",
+    year: 1896,
+    era: "1890s",
+    candidate: "William Jennings Bryan",
+    vp: "Arthur Sewall",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "16 to 1",
+    front: "images/1896_bryan_02_front.jpg",
+    back: "images/1896_bryan_02_back.jpg",
+    text_front: "WM. J. BRYAN - 16 TO 1 FREE COINAGE",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "035",
+    title: "Joshua Levering",
+    year: 1896,
+    era: "1890s",
+    candidate: "Joshua Levering",
+    vp: "Hale Johnson",
+    party: "Prohibition",
+    result: "Lost",
+    slogan: "For National Honor",
+    front: "images/1896_levering_01_front.jpg",
+    back: "images/1896_levering_01_back.jpg",
+    text_front: "PROHIBITION - JOSHUA LEVERING FOR PRESIDENT",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "036",
+    title: "William McKinley",
+    year: 1900,
+    era: "1900s",
+    candidate: "William McKinley",
+    vp: "Theodore Roosevelt",
+    party: "Republican",
+    result: "Won",
+    slogan: "Four More Years of the Full Dinner Pail",
+    front: "images/1900_mckinley_01_front.jpg",
+    back: "images/1900_mckinley_01_back.jpg",
+    text_front: "MCKINLEY - ROOSEVELT",
+    text_back: "",
+    manufacturer: "Indianapolis Photo Button Manufacturing Co. Indianapolis, IN",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "037",
+    title: "William McKinley",
+    year: 1900,
+    era: "1900s",
+    candidate: "William McKinley",
+    vp: "Theodore Roosevelt",
+    party: "Republican",
+    result: "Won",
+    slogan: "Let Well Enough Alone",
+    front: "images/1900_mckinley_02_front.jpg",
+    back: "images/1900_mckinley_02_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: "https://statenisland.pastperfectonline.com/Webobject/07C287E5-DB83-4C57-B8DF-924766416232"
+  },
+  {
+    id: "038",
+    title: "William McKinley",
+    year: 1900,
+    era: "1900s",
+    candidate: "William McKinley",
+    vp: "Theodore Roosevelt",
+    party: "Republican",
+    result: "Won",
+    slogan: "Four More Years of the Full Dinner Pail",
+    front: "images/1900_mckinley_03_front.jpg",
+    back: "images/1900_mckinley_03_back.jpg",
+    text_front: "",
+    text_back: "THE STAR BALL RETAILER CO - LANCASTER, P.A. U.S.A.",
+    manufacturer: "The Star Ball Retailer Co. Lancaster, PA",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "039",
+    title: "William McKinley",
+    year: 1900,
+    era: "1900s",
+    candidate: "William McKinley",
+    vp: "Theodore Roosevelt",
+    party: "Republican",
+    result: "Won",
+    slogan: "Four More Years of the Full Dinner Pail",
+    front: "images/1900_mckinley_04_front.jpg",
+    back: "images/1900_mckinley_04_back.jpg",
+    text_front: "WE WILL BLOOM AGAIN FOR McKINLEY & ROOSEVELT",
+    text_back: "ADOPTED BY Republic National Committee - ISSUED Penn. State Committee - Gen Frank Reeder Chairman",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "040",
+    title: "William McKinley",
+    year: 1900,
+    era: "1900s",
+    candidate: "William McKinley",
+    vp: "Theodore Roosevelt",
+    party: "Republican",
+    result: "Won",
+    slogan: "Four More Years of the Full Dinner Pail",
+    front: "images/1900_mckinley_05_front.jpg",
+    back: "images/1900_mckinley_05_back.jpg",
+    text_front: "IN McKinley we trust, IN Bryan we bust",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: "https://campaignbuttons.com/product/in-mckinley-we-trust-in-bryan-we-bust-button-mckinley-018/"
+  },
+  {
+    id: "041",
+    title: "William Jennings Bryan",
+    year: 1900,
+    era: "1900s",
+    candidate: "William Jennings Bryan",
+    vp: "Adlai E. Stevenson",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "16 to 1",
+    front: "images/1900_bryan_01_front.jpg",
+    back: "images/1900_bryan_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "042",
+    title: "William Jennings Bryan",
+    year: 1900,
+    era: "1900s",
+    candidate: "William Jennings Bryan",
+    vp: "Adlai E. Stevenson",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "16 to 1",
+    front: "images/1900_bryan_02_front.jpg",
+    back: "images/1900_bryan_02_back.jpg",
+    text_front: "16 to 1.",
+    text_back: "",
+    manufacturer: "Baldwin & Gleason N.Y. in N.Y.",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "043",
+    title: "Theodore Roosevelt",
+    year: 1904,
+    era: "1900s",
+    candidate: "Theodore Roosevelt",
+    vp: "Charles W. Fairbanks",
+    party: "Republican",
+    result: "Won",
+    slogan: "To Assure Continued Prosperity",
+    front: "images/1904_roosevelt_01_front.jpg",
+    back: "images/1904_roosevelt_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "044",
+    title: "Theodore Roosevelt",
+    year: 1904,
+    era: "1900s",
+    candidate: "Theodore Roosevelt",
+    vp: "Charles W. Fairbanks",
+    party: "Republican",
+    result: "Won",
+    slogan: "National Unity. Prosperity. Advancement.",
+    front: "images/1904_roosevelt_02_front.jpg",
+    back: "images/1904_roosevelt_02_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "045",
+    title: "Theodore Roosevelt",
+    year: 1904,
+    era: "1900s",
+    candidate: "Theodore Roosevelt",
+    vp: "Charles W. Fairbanks",
+    party: "Republican",
+    result: "Won",
+    slogan: "To Assure Continued Prosperity",
+    front: "images/1904_roosevelt_03_front.jpg",
+    back: "images/1904_roosevelt_03_back.jpg",
+    text_front: "TEDDY",
+    text_back: "MADE BY KEYSTONE BADGE READING PA",
+    manufacturer: "Keystone Badge Co. Reading, PA",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "046",
+    title: "Woodrow Wilson",
+    year: 1912,
+    era: "1910s",
+    candidate: "Woodrow Wilson",
+    vp: "Thomas R. Marshall",
+    party: "Democratic",
+    result: "Won",
+    slogan: "Win with Wilson",
+    front: "images/1912_wilson_01_front.jpg",
+    back: "images/1912_wilson_01_back.jpg",
+    text_front: "WILSON AND MARSHALL",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: "https://www.rubylane.com/item/721942-1373/1912-Wilson-Marshall-Jugate-Democratic-Presidential"
+  },
+  {
+    id: "047",
+    title: "Woodrow Wilson",
+    year: 1916,
+    era: "1910s",
+    candidate: "Woodrow Wilson",
+    vp: "Thomas R. Marshall",
+    party: "Democratic",
+    result: "Won",
+    slogan: "The Man of the Eighth Hour Day",
+    front: "images/1916_wilson_01_front.jpg",
+    back: "images/1916_wilson_01_back.jpg",
+    text_front: "SAFETY FIRST - THE MAN OF THE EIGHTH HOUR DAY",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.worthpoint.com/worthopedia/1916-woodrow-wilson-safety-first-1977390655"
+  },
+  {
+    id: "048",
+    title: "Theodore Roosevelt",
+    year: 1912,
+    era: "1910s",
+    candidate: "Theodore Roosevelt",
+    vp: "Hiram W. Johnson",
+    party: "Progressive",
+    result: "Lost",
+    slogan: "A Square Deal All Around",
+    front: "images/1912_roosevelt_01_front.jpg",
+    back: "images/1912_roosevelt_01_back.jpg",
+    text_front: "PROGRESSIVE",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.legacyamericana.com/Theodore-Roosevelt-Bull-Moose-Progressive-pinback-1912_p_328.html"
+  },
+  {
+    id: "049",
+    title: "Theodore Roosevelt",
+    year: 1912,
+    era: "1910s",
+    candidate: "Theodore Roosevelt",
+    vp: "Hiram W. Johnson",
+    party: "Progressive",
+    result: "Lost",
+    slogan: "Purity Temperance Aid Progress",
+    front: "images/1912_roosevelt_02_front.jpg",
+    back: "images/1912_roosevelt_02_back.jpg",
+    text_front: "P T A P",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.worthpoint.com/worthopedia/antique-1912-pair-bull-moose-party-4729665669"
+  },
+  {
+    id: "050",
+    title: "William Howard Taft",
+    year: 1908,
+    era: "1900s",
+    candidate: "William Howard Taft",
+    vp: "James S. Sherman",
+    party: "Republican",
+    result: "Won",
+    slogan: "Vote for Taft Now, You Can Vote for Bryan Any Time",
+    front: "images/1908_taft_01_front.jpg",
+    back: "images/1908_taft_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "051",
+    title: "William Howard Taft",
+    year: 1908,
+    era: "1900s",
+    candidate: "William Howard Taft",
+    vp: "James S. Sherman",
+    party: "Republican",
+    result: "Won",
+    slogan: "Vote for Taft Now, You Can Vote for Bryan Any Time",
+    front: "images/1908_taft_02_front.jpg",
+    back: "images/1908_taft_02_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "052",
+    title: "William Howard Taft",
+    year: 1912,
+    era: "1910s",
+    candidate: "William Howard Taft",
+    vp: "Nicholas M. Butler",
+    party: "Republican",
+    result: "Won",
+    slogan: "It is Nothing but Fair to Leave Taft in the Chair",
+    front: "images/1912_taft_02_front.jpg",
+    back: "images/1912_taft_02_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "053",
+    title: "Woodrow Wilson",
+    year: 1912,
+    era: "1910s",
+    candidate: "Woodrow Wilson",
+    vp: "Thomas R. Marshall",
+    party: "Democratic",
+    result: "Won",
+    slogan: "Vote for 8 Hour Wilson",
+    front: "images/1912_wilson_02_front.jpg",
+    back: "images/1912_wilson_02_back.jpg",
+    text_front: "WILSON",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "054",
+    title: "Woodrow Wilson",
+    year: 1916,
+    era: "1910s",
+    candidate: "Woodrow Wilson",
+    vp: "Thomas R. Marshall",
+    party: "Democratic",
+    result: "Won",
+    slogan: "He Has Kept Us out of War.",
+    front: "images/1916_wilson_02_front.jpg",
+    back: "images/1916_wilson_02_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "055",
+    title: "Woodrow Wilson",
+    year: 1912,
+    era: "1910s",
+    candidate: "Woodrow Wilson",
+    vp: "Thomas R. Marshall",
+    party: "Democratic",
+    result: "Won",
+    slogan: "I Am for Wilson and an 8 Hour Day",
+    front: "images/1912_wilson_03_front.jpg",
+    back: "images/1912_wilson_03_back.jpg",
+    text_front: "WIN WITH WILSON",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "056",
+    title: "Charles Evans Hughes",
+    year: 1916,
+    era: "1910s",
+    candidate: "Charles Evans Hughes",
+    vp: "Charlie W. Fairbanks",
+    party: "Republican",
+    result: "Lost",
+    slogan: "America First and America Efficient",
+    front: "images/1916_hughes_01_front.jpg",
+    back: "images/1916_hughes_01_back.jpg",
+    text_front: "FOR PRESIDENT - CHARLES E. HUGHES",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: "https://www.lib.uidaho.edu/digital/buttons/items/mg660_box1_1-0074.html"
+  },
+  {
+    id: "057",
+    title: "Charles Evans Hughes",
+    year: 1916,
+    era: "1910s",
+    candidate: "Charles Evans Hughes",
+    vp: "Charlie W. Fairbanks",
+    party: "Republican",
+    result: "Lost",
+    slogan: "America First and America Efficient",
+    front: "images/1916_hughes_02_front.jpg",
+    back: "images/1916_hughes_02_back.jpg",
+    text_front: "HUGHES",
+    text_back: "",
+    manufacturer: "Keil & Styer, Philadelphia, PA",
+    notes: "",
+    link: "https://www.lib.uidaho.edu/digital/buttons/items/mg660_box1_1-0072.html"
+  },
+  {
+    id: "058",
+    title: "Charles Evans Hughes",
+    year: 1916,
+    era: "1910s",
+    candidate: "Charles Evans Hughes",
+    vp: "Charlie W. Fairbanks",
+    party: "Republican",
+    result: "Lost",
+    slogan: "America First and America Efficient",
+    front: "images/1916_hughes_03_front.jpg",
+    back: "images/1916_hughes_03_back.jpg",
+    text_front: "HUGHES",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "059",
+    title: "Warren G. Harding",
+    year: 1920,
+    era: "1920s",
+    candidate: "Warren G. Harding",
+    vp: "Calvin Coolidge",
+    party: "Republican",
+    result: "Won",
+    slogan: "Return to Normalcy",
+    front: "images/1920_harding_01_front.jpg",
+    back: "images/1920_harding_01_back.jpg",
+    text_front: "FOR PRESIDENT - WARREN G. HARDING",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.lib.uidaho.edu/digital/buttons/items/mg660_box1_1-0088.html"
+  },
+  {
+    id: "060",
+    title: "Warren G. Harding",
+    year: 1920,
+    era: "1920s",
+    candidate: "Warren G. Harding",
+    vp: "Calvin Coolidge",
+    party: "Republican",
+    result: "Won",
+    slogan: "Return to Normalcy",
+    front: "images/1920_harding_02_front.jpg",
+    back: "images/1920_harding_02_back.jpg",
+    text_front: "HARDING AND COOLIDGE",
+    text_back: "AMALGAMATED LITHOGRAPHERS OF AMERICA - COSHOCTON",
+    manufacturer: "Amalgamated Lithographers of America - Coshocton, OH",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "061",
+    title: "James M. Cox",
+    year: 1920,
+    era: "1920s",
+    candidate: "James M. Cox",
+    vp: "Franklin D. Roosevelt",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Peace. Progress. Prosperity.",
+    front: "images/1920_cox_01_front.jpg",
+    back: "images/1920_cox_01_back.jpg",
+    text_front: "I WILL CROW IN NOVEMBER - COX",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "062",
+    title: "Calvin Coolidge",
+    year: 1924,
+    era: "1920s",
+    candidate: "Calvin Coolidge",
+    vp: "Charles G. Dawes",
+    party: "Republican",
+    result: "Won",
+    slogan: "Keep Cool and Keep Coolidge",
+    front: "images/1924_coolidge_01_front.jpg",
+    back: "images/1924_coolidge_01_back.jpg",
+    text_front: "COOLIDGE-DAWES CLUB - ALBANY COUNTY",
+    text_back: "",
+    manufacturer: "Crackerbarrel, Farmingdale, NY",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "063",
+    title: "Calvin Coolidge",
+    year: 1924,
+    era: "1920s",
+    candidate: "Calvin Coolidge",
+    vp: "Charles G. Dawes",
+    party: "Republican",
+    result: "Won",
+    slogan: "Full Dinner Pail",
+    front: "images/1924_coolidge_02_front.jpg",
+    back: "images/1924_coolidge_02_back.jpg",
+    text_front: "COOLIDGE-DAWES - FULL DINNER PAIL",
+    text_back: "",
+    manufacturer: "Geraghty & Company, Chicago, IL",
+    notes: "",
+    link: "https://kids.britannica.com/students/assembly/view/289144"
+  },
+  {
+    id: "064",
+    title: "John W. Davis",
+    year: 1924,
+    era: "1920s",
+    candidate: "John W. Davis",
+    vp: "Charles W. Bryan",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Honest Days With Davis",
+    front: "images/1924_davis_01_front.jpg",
+    back: "images/1924_davis_01_back.jpg",
+    text_front: "FOR PRESIDENT - JOHN W. DAVIS",
+    text_back: "KLEENEX TISSUES 68",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "065",
+    title: "John W. Davis",
+    year: 1924,
+    era: "1920s",
+    candidate: "John W. Davis",
+    vp: "Charles W. Bryan",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Honest Days With Davis",
+    front: "images/1924_davis_02_front.jpg",
+    back: "images/1924_davis_02_back.jpg",
+    text_front: "DAVIS",
+    text_back: "KLEENEX TISSUES 68",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "066",
+    title: "John W. Davis",
+    year: 1924,
+    era: "1920s",
+    candidate: "John W. Davis",
+    vp: "Charles W. Bryan",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Honest Days With Davis",
+    front: "images/1924_davis_03_front.jpg",
+    back: "images/1924_davis_03_back.jpg",
+    text_front: "FOR PRESIDENT - JOHN W. DAVIS",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "066",
+    title: "Robert M. La Follette",
+    year: 1924,
+    era: "1920s",
+    candidate: "Robert M. La Follette",
+    vp: "Burton K. Wheeler",
+    party: "Progressive",
+    result: "Lost",
+    slogan: "A Covenant With the People",
+    front: "images/1924_follette_01_front.jpg",
+    back: "images/1924_follette_01_back.jpg",
+    text_front: "LA FOLLETTE - WHEELER - '76",
+    text_back: "",
+    manufacturer: "Geraghty & Company, Chicago, IL",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "067",
+    title: "Alton B. Parker",
+    year: 1904,
+    era: "1900s",
+    candidate: "Alton B. Parker",
+    vp: "Henry G. Davis",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Gold is Good",
+    front: "images/1904_parker_01_front.jpg",
+    back: "images/1904_parker_01_back.jpg",
+    text_front: "ALTON B. PARKER",
+    text_back: "",
+    manufacturer: "whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "068",
+    title: "Alton B. Parker",
+    year: 1904,
+    era: "1900s",
+    candidate: "Alton B. Parker",
+    vp: "Henry G. Davis",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Gold is Good",
+    front: "images/1904_parker_02_front.jpg",
+    back: "images/1904_parker_02_back.jpg",
+    text_front: "ALTON B. PARKER",
+    text_back: "",
+    manufacturer: "Baltimore Badge & Novelty Company, Baltimore, MD",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "069",
+    title: "Alton B. Parker",
+    year: 1904,
+    era: "1900s",
+    candidate: "Alton B. Parker",
+    vp: "Henry G. Davis",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Gold is Good",
+    front: "images/1904_parker_03_front.jpg",
+    back: "images/1904_parker_03_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "070",
+    title: "William Howard Taft",
+    year: 1908,
+    era: "1900s",
+    candidate: "William Howard Taft",
+    vp: "James S. Sherman",
+    party: "Republican",
+    result: "Won",
+    slogan: "A Square Deal For All",
+    front: "images/1908_taft_03_front.jpg",
+    back: "images/1908_taft_03_back.jpg",
+    text_front: "TAFT",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "071",
+    title: "William Howard Taft",
+    year: 1908,
+    era: "1900s",
+    candidate: "William Howard Taft",
+    vp: "James S. Sherman",
+    party: "Republican",
+    result: "Won",
+    slogan: "Vote for Taft Now, You Can Vote for Bryan Any Time",
+    front: "images/1908_taft_04_front.jpg",
+    back: "images/1908_taft_04_back.jpg",
+    text_front: "PRESIDENT - VICE PRESIDENT - WM. H. TAFT - J. S. SHERMAN",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "072",
+    title: "William Howard Taft",
+    year: 1912,
+    era: "1910s",
+    candidate: "William Howard Taft",
+    vp: "Nicholas M. Butler",
+    party: "Republican",
+    result: "Lost",
+    slogan: "It Is Nothing but Fair to Leave Taft in the Chair",
+    front: "images/1912_taft_01_front.jpg",
+    back: "images/1912_taft_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Hyatt Manufacturing Co. Baltimore, MD",
+    notes: "",
+    link: "https://www.legacyamericana.com/Taft-and-Sherman-Photographic-jugate-pinback_p_469.html#:~:text=Price:%20$39.95,Co.%2C%20Baltimore."
+  },
+  {
+    id: "073",
+    title: "William Howard Taft",
+    year: 1908,
+    era: "1900s",
+    candidate: "William Howard Taft",
+    vp: "James S. Sherman",
+    party: "Republican",
+    result: "Won",
+    slogan: "A Square Deal For All",
+    front: "images/1908_taft_05_front.jpg",
+    back: "images/1908_taft_05_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "074",
+    title: "William Jennings Bryan",
+    year: 1908,
+    era: "1900s",
+    candidate: "William Jennings Bryan",
+    vp: "John W. Kern",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Shall the People Rule",
+    front: "images/1908_bryan_01_front.jpg",
+    back: "images/1908_bryan_01_back.jpg",
+    text_front: "",
+    text_back: "",
+    manufacturer: "Bastian Brothers Manufacturing Co. Rochester, NY",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "075",
+    title: "William Jennings Bryan",
+    year: 1908,
+    era: "1900s",
+    candidate: "William Jennings Bryan",
+    vp: "John W. Kern",
+    party: "Democratic",
+    result: "Lost",
+    slogan: "Facing the Future",
+    front: "images/1908_bryan_02_front.jpg",
+    back: "images/1908_bryan_02_back.jpg",
+    text_front: "BRYAN AND KERN",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: ""
+  },
+  {
+    id: "076",
+    title: "Woodrow Wilson",
+    year: 1916,
+    era: "1910s",
+    candidate: "Woodrow Wilson",
+    vp: "Thomas R. Marshall",
+    party: "Democratic",
+    result: "Won",
+    slogan: "War in Europe – Peace in America – God Bless Wilson",
+    front: "images/1916_wilson_03_front.jpg",
+    back: "images/1916_wilson_03_back.jpg",
+    text_front: "WILSON - 8 HOURS",
+    text_back: "",
+    manufacturer: "Whitehead & Hoag Co. Newark, NJ",
+    notes: "",
+    link: "https://www.worthpoint.com/worthopedia/vintage-1916-woodrow-wilson-hour-1832099581"
+  },
+  {
+    id: "077",
+    title: "James A. Garfield",
+    year: 1880,
+    era: "1880s",
+    candidate: "James A. Garfield",
+    vp: "Chester A. Arthur",
+    party: "Republican",
+    result: "Won",
+    slogan: "The Union and the Constitution Forever!",
+    front: "images/1880_garfield_01_front.jpg",
+    back: "images/1880_garfield_01_back.jpg",
+    text_front: "GARFIELD AND ARTHUR",
+    text_back: "",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.worthpoint.com/worthopedia/vintage-1916-woodrow-wilson-hour-1832099581"
+  }
+];
+
+const partyClass=p=>({"Democratic":"dem","Republican":"rep","Progressive":"prog","Whig":"whig"}[p]||"other");
+
+// elections indexed by year
+const elections={
+  1840: {
+    year: 1840,
+    candidates: ["William Henry Harrison","Martin Van Buren"],
+    results: {"Whig":"Won","Democratic":"Lost"}
+  },
+  1844: {
+    year: 1844,
+    candidates: ["James K. Polk","Henry Clay"],
+    results: {"Democratic":"Won","Whig":"Lost"}
+  },
+  1848: {
+    year: 1848,
+    candidates: ["Zachary Taylor","Lewis Cass"],
+    results: {"Whig":"Won","Democratic":"Lost"}
+  },
+  1852: {
+    year: 1852,
+    candidates: ["Franklin Pierce","Winfield Scott"],
+    results: {"Democratic":"Won","Whig":"Lost"}
+  },
+  1856: {
+    year: 1856,
+    candidates: ["James Buchanan","John C. Frémont"],
+    results: {"Democratic":"Won","Republican":"Lost"}
+  },
+  1860: {
+    year: 1860,
+    candidates: ["Abraham Lincoln","Stephen A. Douglas","John C. Breckinridge","John Bell"],
+    results: {"Republican":"Won","Democratic":"Lost","Southern Democratic":"Lost","Constitutional Union":"Lost"}
+  },
+  1864: {
+    year: 1864,
+    candidates: ["Abraham Lincoln","George B. McClellan"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1868: {
+    year: 1868,
+    candidates: ["Ulysses S. Grant","Horatio Seymour"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1872: {
+    year: 1872,
+    candidates: ["Ulysses S. Grant","Horace Greeley"],
+    results: {"Republican":"Won","Liberal Republican":"Lost"}
+  },
+  1876: {
+    year: 1876,
+    candidates: ["Rutherford B. Hayes","Samuel J. Tilden"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1880: {
+    year: 1880,
+    candidates: ["James A. Garfield","Winfield Scott Hancock"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1884: {
+    year: 1884,
+    candidates: ["Grover Cleveland","James G. Blaine"],
+    results: {"Democratic":"Won","Republican":"Lost"}
+  },
+  1888: {
+    year: 1888,
+    candidates: ["Benjamin Harrison","Grover Cleveland"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1892: {
+    year: 1892,
+    candidates: ["Grover Cleveland","Benjamin Harrison"],
+    results: {"Democratic":"Won","Republican":"Lost"}
+  },
+  1896: {
+    year: 1896,
+    candidates: ["William McKinley","William Jennings Bryan"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1900: {
+    year: 1900,
+    candidates: ["William McKinley","William Jennings Bryan"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1904: {
+    year: 1904,
+    candidates: ["Theodore Roosevelt","Alton B. Parker"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1908: {
+    year: 1908,
+    candidates: ["William Howard Taft","William Jennings Bryan"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1912: {
+    year: 1912,
+    candidates: ["Woodrow Wilson","Theodore Roosevelt","William Howard Taft"],
+    results: {"Democratic":"Won","Progressive":"Lost","Republican":"Lost"}
+  },
+  1916: {
+    year: 1916,
+    candidates: ["Woodrow Wilson","Charles Evans Hughes"],
+    results: {"Democratic":"Won","Republican":"Lost"}
+  },
+  1920: {
+    year: 1920,
+    candidates: ["Warren G. Harding","James M. Cox"],
+    results: {"Republican":"Won","Democratic":"Lost"}
+  },
+  1924: {
+    year: 1924,
+    candidates: ["Calvin Coolidge","John W. Davis","Robert M. La Follette"],
+    results: {"Republican":"Won","Democratic":"Lost","Progressive":"Lost"}
+  }
+};
+
+/* group buttons by year */
+const byYear = {};
+buttons.forEach(b=>{
+  (byYear[b.year] ??= []).push(b);
+});
+
+const years = Object.keys(elections)
+  .map(Number)
+  .sort((a,b)=>a-b);
+
+/* ===== timeline ===== */
+const timeline = document.createElement("aside");
+timeline.className="timeline";
+
+let lastDecade=null;
+years.forEach(y=>{
+  const decade = Math.floor(y/10)*10;
+  if(decade!==lastDecade){
+    const d=document.createElement("div");
+    d.className="tick decade";
+    d.textContent=decade+"s";
+    timeline.appendChild(d);
+    lastDecade=decade;
+  }
+
+  const e=elections[y];
+  const winnerParty = Object.entries(e.results)
+    .find(([_,r])=>r==="Won")?.[0] || "Other";
+
+  const t=document.createElement("div");
+  t.className=`tick year-tick ${partyClass(winnerParty)}`;
+  t.textContent=y;
+  t.dataset.year=String(y);
+  t.onclick=()=>document.getElementById("year-"+y)
+    ?.scrollIntoView({behavior:"smooth"});
+  timeline.appendChild(t);
+});
+
+/* ===== content ===== */
+const content=document.createElement("main");
+content.className="content";
+
+years.forEach(y=>{
+  const section=document.createElement("section");
+  section.dataset.year=y;
+  section.id="year-"+y;
+
+  section.innerHTML=`<div class="season">
+    <h2>${y} Presidential Election</h2>
+  </div>`;
+
+  const grouped={};
+  (byYear[y]||[]).forEach(b=>{
+    const key=`${b.candidate} (${b.party})`;
+    (grouped[key]??=[]).push(b);
+  });
+
+  Object.entries(grouped).forEach(([name,list])=>{
+    const won=list.some(b=>b.result==="Won");
+    const h=document.createElement("h3");
+    h.textContent=`${name} — ${won?"Won":"Lost"}`;
+    section.appendChild(h);
+
+    const grid=document.createElement("div");
+    grid.className="grid";
+
+    list.forEach(b=>{
+      const card=document.createElement("div");
+      card.className=`card party-${partyClass(b.party)}`;
+      card.innerHTML=`
+        <div class="front">
+          <img src="${b.front}" alt="${b.title}">
+          <div class="info">
+            <span class="slogan">${b.slogan||""}</span>
+            <div>${b.candidate} / ${b.vp}</div>
+            <div>Front Text: ${b.text_front||""}</div>
+          </div>
+        </div>
+        <div class="back">
+          <img src="${b.back}" alt="${b.title} back">
+          <div class="backtext">
+            <span class="slogan">${b.slogan||""}</span>
+            <div>Back Text: ${b.text_back||""}</div>
+            <div>${b.manufacturer||""}</div>
+          </div>
+        </div>
+      `;
+      card.onclick=()=>card.classList.toggle("show-back");
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+  });
+
+  content.appendChild(section);
+});
+
+/* ===== mount ===== */
+const layout=document.createElement("div");
+layout.className="layout";
+layout.appendChild(timeline);
+layout.appendChild(content);
+document.body.appendChild(layout);
+
+/* ===== scroll-linked timeline highlight (no page snapping) ===== */
+const yearSections=[...content.querySelectorAll('section[data-year]')];
+const yearTicks=[...timeline.querySelectorAll('.year-tick')];
+const tickByYear = Object.fromEntries(yearTicks.map(t=>[t.dataset.year, t]));
+
+function centerTickInTimeline(tick){
+  if(!tick) return;
+  const container = timeline;
+  const targetTop = tick.offsetTop - (container.clientHeight/2) + (tick.clientHeight/2);
+  container.scrollTo({ top: Math.max(0, targetTop), behavior: 'auto' });
+}
+
+const io = new IntersectionObserver((entries)=>{
+  const visible = entries
+    .filter(e=>e.isIntersecting)
+    .sort((a,b)=>b.intersectionRatio - a.intersectionRatio)[0];
+  if(!visible) return;
+  const y = String(visible.target.dataset.year);
+  yearTicks.forEach(t=>t.classList.remove('active'));
+  const tick = tickByYear[y];
+  if(tick){
+    tick.classList.add('active');
+    centerTickInTimeline(tick);
+  }
+},{threshold:[0.55, 0.75]});
+
+yearSections.forEach(s=>io.observe(s));
+</script>
+
+</body>
+</html>
