@@ -164,6 +164,7 @@ section[data-year]{
   overflow-y:auto;
   padding:10px 12px 8px;
   font-size:12px;
+  line-height:1.4;
 }
 
 .slogan{
@@ -229,7 +230,7 @@ section[data-year]{
   }
   /* Show full text on small screens */
   .card{ height:auto; }
-  .info, .backtext{ overflow:visible; }
+  .info, .backtext{ overflow:visible; font-size:13px; }
   /* Optional: stack cards in one column for readability */
   .grid{ grid-template-columns:1fr; gap:16px; }
   .content{ padding:16px; }
@@ -1663,6 +1664,42 @@ const buttons = [
     manufacturer: "",
     notes: "",
     link: "https://www.worthpoint.com/worthopedia/vintage-1916-woodrow-wilson-hour-1832099581"
+  },
+  {
+    id: "078",
+    title: "Horace Greeley",
+    year: 1872,
+    era: "1870s",
+    candidate: "Horace Greeley",
+    vp: "Benjamin G. Brown",
+    party: "Liberal Republican",
+    result: "Lost",
+    slogan: "Turn the Rascals Out",
+    front: "images/1872_greeley_01_front.jpg",
+    back: "images/1872_greeley_01_back.jpg",
+    text_front: "THE SAGE OF CHAPPAQUA - H. GREELEY",
+    text_back: "GREELEY. BROWN. &. AMNESTY. - 1872",
+    manufacturer: "",
+    notes: "",
+    link: "https://www.legacyamericana.com/Horace-Greeley-The-Sage-of-Chappaqua-campaign-token_p_1063.html"
+  },
+  {
+    id: "079",
+    title: "Woodrow Wilson",
+    year: 1913,
+    era: "1910s",
+    candidate: "",
+    vp: "",
+    party: "Democratic",
+    result: "",
+    slogan: "",
+    front: "images/1913_wilson_01_front.jpg",
+    back: "images/1913_wilson_01_back.jpg",
+    text_front: "PAY THE SAME MR. WILSON",
+    text_back: "",
+    manufacturer: "Bastian Brothers Manufacturing Co. Rochester, NY",
+    notes: "",
+    link: "https://www.worthpoint.com/worthopedia/vintage-1916-woodrow-wilson-hour-1832099581"
   }
 ];
 
@@ -1839,8 +1876,20 @@ years.forEach(y=>{
     (grouped[key]??=[]).push(b);
   });
 
-  Object.entries(grouped).forEach(([name,list])=>{
-    const won=list.some(b=>b.result==="Won");
+  // Arrange candidate groups with winning party first
+  const groups = Object.entries(grouped).map(([name,list])=>({
+    name,
+    list,
+    won: list.some(b=>b.result==="Won")
+  }));
+
+  groups.sort((a,b)=>{
+    // winners first; if tie, keep original order
+    if(a.won===b.won) return 0;
+    return a.won? -1 : 1;
+  });
+
+  groups.forEach(({name,list,won})=>{
     const h=document.createElement("h3");
     h.textContent=`${name} — ${won?"Won":"Lost"}`;
     section.appendChild(h);
