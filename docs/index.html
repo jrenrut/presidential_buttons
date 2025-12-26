@@ -222,12 +222,32 @@ section[data-year]{
   content:"Reverse"; /* when back is visible */
 }
 
+/* enlarge button overlay on cards */
+.enlarge-btn{
+  position:absolute;
+  top:6px;
+  left:6px;
+  z-index:4;
+  border:none;
+  border-radius:12px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:600;
+  color:#111;
+  background:rgba(255,255,255,.92);
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  cursor:pointer;
+}
+.enlarge-btn:hover{background:#fff}
+.enlarge-btn:focus{outline:2px solid #2b6cff; outline-offset:2px}
+
 /* mobile-friendly sizing */
 @media (max-width: 520px){
   .card::before{
     font-size:14px;
     padding:6px 13px;
   }
+  .enlarge-btn{ font-size:13px; padding:8px 12px; }
   /* Show full text on small screens */
   .card{ height:auto; }
   .info, .backtext{ overflow:visible; font-size:13px; }
@@ -235,6 +255,41 @@ section[data-year]{
   .grid{ grid-template-columns:1fr; gap:16px; }
   .content{ padding:16px; }
 }
+
+/* lightbox overlay */
+.lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  padding:24px;
+}
+.lightbox.open{ display:flex; }
+.lightbox img{
+  max-width:min(92vw, 1400px);
+  max-height:90vh;
+  object-fit:contain;
+  border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+.lightbox .close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  border:none;
+  border-radius:12px;
+  padding:10px 14px;
+  font-size:14px;
+  font-weight:700;
+  background:#fff;
+  color:#111;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  cursor:pointer;
+}
+.lightbox .close:hover{ background:#f2f2f2 }
 
 /* party stripe on cards */
 .party-dem{border-left:6px solid var(--dem)}
@@ -1917,8 +1972,18 @@ years.forEach(y=>{
             <div>${b.manufacturer||""}</div>
           </div>
         </div>
+        <button class="enlarge-btn" aria-label="Enlarge image">Enlarge</button>
       `;
       card.onclick=()=>card.classList.toggle("show-back");
+
+      const enlargeBtn = card.querySelector('.enlarge-btn');
+      enlargeBtn.addEventListener('click', (ev)=>{
+        ev.stopPropagation();
+        const isBack = card.classList.contains('show-back');
+        const imgEl = card.querySelector(isBack ? '.back img' : '.front img');
+        openLightbox(imgEl?.src, imgEl?.alt || 'Button image');
+      });
+
       grid.appendChild(card);
     });
 
@@ -1939,6 +2004,43 @@ document.body.appendChild(layout);
 const yearSections=[...content.querySelectorAll('section[data-year]')];
 const yearTicks=[...timeline.querySelectorAll('.year-tick')];
 const tickByYear = Object.fromEntries(yearTicks.map(t=>[t.dataset.year, t]));
+
+/* ===== lightbox ===== */
+const lightbox = document.createElement('div');
+lightbox.className = 'lightbox';
+lightbox.innerHTML = `
+  <button class="close" aria-label="Close">✕</button>
+  <img alt="Enlarged button image" />
+`;
+document.body.appendChild(lightbox);
+
+const lightboxImg = lightbox.querySelector('img');
+const lightboxClose = lightbox.querySelector('.close');
+
+function openLightbox(src, alt){
+  if(!src) return;
+  lightboxImg.src = src;
+  lightboxImg.alt = alt || 'Button image';
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  lightboxImg.removeAttribute('src');
+  document.body.style.overflow = '';
+}
+lightboxClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (ev)=>{
+  // close when clicking outside image
+  if(ev.target === lightbox){
+    closeLightbox();
+  }
+});
+window.addEventListener('keydown', (ev)=>{
+  if(ev.key === 'Escape' && lightbox.classList.contains('open')){
+    closeLightbox();
+  }
+});
 
 function centerTickInTimeline(tick){
   if(!tick) return;
